@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  baseurl = "http://localhost:3000/";
+  baseurl = "https://todo-list-angular-server.onrender.com/";
 
   constructor(private client: HttpClient) {}
 
