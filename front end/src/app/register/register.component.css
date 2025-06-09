@@ -1,0 +1,601 @@
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.bg-svg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.6;
+}
+
+.navbar {
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.navbar-brand:hover {
+    color: #333;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #4285f4, #1a73e8);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.navbar-nav {
+    display: flex;
+    flex-direction: row;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    display: list-item;
+}
+
+.navbar-nav .nav-link {
+    color: #666 !important;
+    font-weight: 500;
+    margin: 0 0.5rem;
+    transition: all 0.3s ease;
+    display: block;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    position: relative;
+    cursor: pointer;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #1a73e8 !important;
+    transform: translateY(-1px);
+}
+
+.navbar-toggler {
+    border: none;
+    padding: 0.25rem 0.5rem;
+    background-color: transparent;
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+    outline: none;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%2833, 37, 41, 0.75%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+    display: inline-block;
+    width: 1.5em;
+    height: 1.5em;
+    vertical-align: middle;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+}
+
+.navbar-collapse {
+    flex-basis: 100%;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.registration-container {
+    min-height: calc(100vh - 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.registration-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    max-width: 500px;
+    width: 100%;
+    margin: 1rem;
+}
+
+.registration-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.registration-title h2 {
+    color: #4285f4;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.registration-title p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.social-login {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.social-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid #e0e0e0;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.social-btn.facebook {
+    color: #1877f2;
+    border-color: #1877f2;
+}
+
+.social-btn.facebook:hover {
+    background: #1877f2;
+    color: white;
+}
+
+.social-btn.google {
+    color: #db4437;
+    border-color: #db4437;
+}
+
+.social-btn.google:hover {
+    background: #db4437;
+    color: white;
+}
+
+.social-btn.apple {
+    color: #000;
+    border-color: #000;
+}
+
+.social-btn.apple:hover {
+    background: #000;
+    color: white;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border: none;
+    border-bottom: 2px solid #e0e0e0;
+    border-radius: 0;
+    padding: 0.75rem 0;
+    font-size: 1rem;
+    background: transparent;
+    transition: border-color 0.3s ease;
+    width: 100%;
+}
+
+.form-control:focus {
+    border-bottom-color: #4285f4;
+    box-shadow: none;
+    background: transparent;
+    outline: none;
+}
+
+.form-control::placeholder {
+    color: #999;
+}
+
+.register-btn {
+    background: linear-gradient(135deg, #4285f4, #1a73e8);
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    color: white;
+    font-weight: 600;
+    font-size: 1.1rem;
+    width: 100%;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(66, 133, 244, 0.3);
+    background: linear-gradient(135deg, #1a73e8, #1557b0);
+}
+
+.divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #999;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e0e0e0;
+    z-index: 1;
+}
+
+.divider span {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 0 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.login-link p {
+    color: #666;
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.login-link a {
+    color: #4285f4;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.login-link a:hover {
+    color: #1a73e8;
+    text-decoration: underline;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        margin-top: 1rem;
+    }
+    
+    .navbar-nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .navbar-nav .nav-link {
+        margin: 0.25rem 0;
+        padding: 0.5rem 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .registration-card {
+        padding: 2rem;
+        margin: 0.5rem;
+    }
+
+    .registration-title h2 {
+        font-size: 1.7rem;
+    }
+
+    .social-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.3rem;
+    }
+
+    .logo-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
+    .registration-card {
+        padding: 1.5rem;
+    }
+}
+/* Additional CSS enhancements for better functionality */
+
+/* Form validation styles */
+.form-control:invalid:not(:placeholder-shown) {
+    border-bottom-color: #dc3545;
+    animation: shake 0.3s ease-in-out;
+}
+
+.form-control:valid:not(:placeholder-shown) {
+    border-bottom-color: #28a745;
+}
+
+/* Shake animation for invalid inputs */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Loading state for register button */
+.register-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.register-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.register-btn.loading::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Enhanced focus states */
+.social-btn:focus {
+    outline: 2px solid rgba(66, 133, 244, 0.5);
+    outline-offset: 2px;
+}
+
+.register-btn:focus {
+    outline: 2px solid rgba(66, 133, 244, 0.5);
+    outline-offset: 2px;
+}
+
+/* Form group enhanced styles */
+.form-group {
+    position: relative;
+}
+
+.form-group .error-message {
+    color: #dc3545;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.form-group.has-error .error-message {
+    display: block;
+    opacity: 1;
+}
+
+.form-group.has-success .form-control {
+    border-bottom-color: #28a745;
+}
+
+/* Password strength indicator */
+.password-strength {
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.password-strength .strength-bar {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.password-strength.weak .strength-bar {
+    width: 33%;
+    background: #dc3545;
+}
+
+.password-strength.medium .strength-bar {
+    width: 66%;
+    background: #ffc107;
+}
+
+.password-strength.strong .strength-bar {
+    width: 100%;
+    background: #28a745;
+}
+
+/* Floating label effect */
+.form-floating {
+    position: relative;
+}
+
+.form-floating .form-control {
+    padding-top: 1.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.form-floating label {
+    position: absolute;
+    top: 0.75rem;
+    left: 0;
+    color: #999;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    transform-origin: 0 0;
+}
+
+.form-floating .form-control:focus ~ label,
+.form-floating .form-control:not(:placeholder-shown) ~ label {
+    transform: scale(0.85) translateY(-0.5rem);
+    color: #4285f4;
+}
+
+/* Improved mobile navigation */
+@media (max-width: 991.98px) {
+    .navbar-collapse.show {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 10px;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+}
+
+/* Print styles */
+@media print {
+    .bg-svg {
+        display: none;
+    }
+    
+    .registration-card {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        background: white;
+    }
+    
+    .social-btn {
+        display: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .registration-card {
+        border: 2px solid #000;
+        background: #fff;
+    }
+    
+    .form-control {
+        border-bottom: 2px solid #000;
+    }
+    
+    .register-btn {
+        background: #000;
+        border: 2px solid #000;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+
+
+/* Additional utility classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-up {
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Toast notification styles (if needed) */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+}
+
+.toast {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border-left: 4px solid #4285f4;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+}
+
+.toast.show {
+    transform: translateX(0);
+}
+
+.toast.error {
+    border-left-color: #dc3545;
+}
+
+.toast.success {
+    border-left-color: #28a745;
+}
+
+.toast.warning {
+    border-left-color: #ffc107;
+}

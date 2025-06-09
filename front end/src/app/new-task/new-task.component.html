@@ -1,0 +1,291 @@
+<div class="new-task-app">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container-fluid">
+      <div class="navbar-brand d-flex align-items-center">
+        <div class="logo-icon me-2">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="#007bff"/>
+            <path d="M8 16L14 22L24 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="fw-bold text-primary fs-4">Listify</span>
+      </div>
+      
+      <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+        <button class="btn btn-link text-dark p-2 me-2" title="Dark Mode">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="btn btn-link text-dark p-2 me-2" title="Notifications">
+          <i class="fas fa-bell"></i>
+        </button>
+        <div class="profile-avatar me-3">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D" alt="Profile" class="rounded-circle">
+        </div>
+        <button class="btn btn-outline-danger btn-sm" (click)="logout()" title="Logout">
+          <i class="fas fa-sign-out-alt me-1"></i>
+          <span class="d-none d-sm-inline">Logout</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4 sidebar-wrapper">
+        <div class="sidebar">
+          <!-- Calendar -->
+          <div class="calendar-section mb-4">
+            <div class="calendar-header d-flex justify-content-between align-items-center mb-3">
+              <button class="btn btn-sm btn-outline-secondary" (click)="previousMonth()">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <h6 class="mb-0 fw-bold">{{ currentMonth }} {{ currentYear }}</h6>
+              <button class="btn btn-sm btn-outline-secondary" (click)="nextMonth()">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+            
+            <div class="calendar-grid">
+              <div class="calendar-weekdays">
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+                <div class="weekday">Sun</div>
+              </div>
+              <div class="calendar-days">
+                <div *ngFor="let day of calendarDays" 
+                     class="calendar-day"
+                     [class.other-month]="!day.isCurrentMonth"
+                     [class.today]="day.isToday"
+                     [class.selected]="day.selected"
+                     (click)="selectDate(day)">
+                  {{ day.date }}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Selected Date Display -->
+            <div *ngIf="selectedDate" class="selected-date-display mt-3">
+              <div class="alert alert-info py-2">
+                <i class="fas fa-calendar-alt me-2"></i>
+                <small class="fw-medium">Due: {{ selectedDate | date:'MMM d, y' }}</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tasks Section -->
+          <div class="tasks-section mb-4">
+            <h6 class="section-title mb-3">Tasks</h6>
+            <div *ngFor="let list of lists" class="list-item d-flex justify-content-between align-items-center">
+              <span>{{ list.name }}</span>
+              <span class="badge bg-primary">{{ list.count }}</span>
+            </div>
+          </div>
+
+          <!-- Lists Section -->
+          <div class="lists-section">
+            <h6 class="section-title mb-3">Lists</h6>
+            <div class="list-item d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center">
+                <span class="list-icon me-2">🌅</span>
+                <span>Daily Routine</span>
+              </div>
+              <span class="badge" style="background-color: #4CAF50">1</span>
+            </div>
+            <div class="list-item d-flex justify-content-between align-items-center mb-2">
+              <div class="d-flex align-items-center">
+                <span class="list-icon me-2">📚</span>
+                <span>Study</span>
+              </div>
+              <span class="badge" style="background-color: #2196F3">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9 col-md-8 main-content">
+        <div class="content-wrapper">
+          <!-- Header -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+              <button class="btn btn-link text-dark p-2 me-2" (click)="goBack()" title="Go Back">
+                <i class="fas fa-arrow-left"></i>
+              </button>
+              <h2 class="page-title mb-0 d-flex align-items-center">
+                New Task
+                <span class="task-emoji ms-2">🤩</span>
+              </h2>
+            </div>
+          </div>
+
+          <!-- New Task Form -->
+          <form class="new-task-form" (ngSubmit)="createTask()">
+            <!-- Task Name -->
+            <div class="form-section mb-4">
+              <div class="form-group">
+                <input type="text" 
+                       class="form-control form-control-lg task-name-input" 
+                       placeholder="Name your new task"
+                       [(ngModel)]="taskName"
+                       name="taskName"
+                       required>
+              </div>
+            </div>
+
+            <!-- Task Description -->
+            <div class="form-section mb-4">
+              <div class="form-group">
+                <textarea class="form-control task-description-input" 
+                          rows="3"
+                          placeholder="Describe your new task"
+                          [(ngModel)]="taskDescription"
+                          name="taskDescription"></textarea>
+              </div>
+            </div>
+
+            <!-- Date Selection -->
+            <div class="form-section mb-4">
+              <h6 class="form-section-title mb-3">Due Date</h6>
+              <div class="date-selection">
+                <div class="alert alert-light d-flex align-items-center justify-content-between">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-calendar-alt text-primary me-3"></i>
+                    <div>
+                      <div class="fw-medium">
+                        {{ selectedDate ? (selectedDate | date:'EEEE, MMMM d, y') : 'No date selected' }}
+                      </div>
+                      <small class="text-muted">Select a date from the calendar</small>
+                    </div>
+                  </div>
+                  <button *ngIf="selectedDate" 
+                          type="button" 
+                          class="btn btn-sm btn-outline-secondary"
+                          (click)="selectedDate = null; updateCalendar()">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Color -->
+            <div class="form-section mb-4">
+              <h6 class="form-section-title mb-3">Card Color</h6>
+              <div class="color-palette">
+                <div *ngFor="let color of colors" 
+                     class="color-option"
+                     [class.selected]="selectedColor === color"
+                     [style.background-color]="color"
+                     (click)="selectColor(color)"
+                     [title]="color">
+                  <i *ngIf="selectedColor === color" class="fas fa-check text-white"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Repeat Section -->
+            <div class="form-section mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h6 class="form-section-title mb-1">Repeat</h6>
+                  <small class="text-muted">Set a cycle for your task</small>
+                </div>
+                <div class="form-check form-switch">
+                  <input class="form-check-input repeat-toggle" 
+                         type="checkbox" 
+                         id="repeatToggle"
+                         [(ngModel)]="repeatEnabled"
+                         name="repeatEnabled"
+                         (change)="toggleRepeat()">
+                </div>
+              </div>
+
+              <div *ngIf="repeatEnabled" class="repeat-options">
+                <!-- Repeat Type Selection -->
+                <div class="btn-group repeat-type-group mb-3" role="group">
+                  <input type="radio" class="btn-check" name="repeatType" id="daily" value="daily" 
+                         [(ngModel)]="repeatType" (change)="selectRepeatType('daily')">
+                  <label class="btn btn-outline-secondary btn-sm" for="daily">Daily</label>
+                  
+                  <input type="radio" class="btn-check" name="repeatType" id="weekly" value="weekly" 
+                         [(ngModel)]="repeatType" (change)="selectRepeatType('weekly')">
+                  <label class="btn btn-outline-secondary btn-sm" for="weekly">Weekly</label>
+                  
+                  <input type="radio" class="btn-check" name="repeatType" id="monthly" value="monthly" 
+                         [(ngModel)]="repeatType" (change)="selectRepeatType('monthly')">
+                  <label class="btn btn-outline-secondary btn-sm" for="monthly">Monthly</label>
+                </div>
+
+                <!-- Days Selection (for weekly) -->
+                <div *ngIf="repeatType === 'weekly'" class="days-selection mb-3">
+                  <div class="days-group">
+                    <button *ngFor="let day of weekDays" 
+                            type="button"
+                            class="btn day-btn"
+                            [class.btn-primary]="isDaySelected(day)"
+                            [class.btn-outline-secondary]="!isDaySelected(day)"
+                            (click)="toggleDay(day)">
+                      {{ day }}
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Repeat Summary -->
+                <div class="repeat-summary">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted">Repeat</span>
+                    <span class="fw-medium">{{ repeatFrequency }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tags Section -->
+            <div class="form-section mb-5">
+              <h6 class="form-section-title mb-3">Set a tag for your task</h6>
+              <div class="tags-container">
+                <div class="available-tags">
+                  <button *ngFor="let tag of availableTags"
+                          type="button"
+                          class="btn tag-btn me-2 mb-2"
+                          [class.btn-primary]="tag.selected"
+                          [class.btn-outline-secondary]="!tag.selected"
+                          (click)="toggleTag(tag.id)">
+                    {{ tag.name }}
+                  </button>
+                  <button type="button" 
+                          class="btn btn-outline-secondary tag-btn me-2 mb-2"
+                          (click)="addNewTag()">
+                    <i class="fas fa-plus me-1"></i>
+                    Add More
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <button type="button" 
+                      class="btn btn-outline-secondary btn-lg me-3"
+                      (click)="goBack()">
+                <i class="fas fa-times me-2"></i>
+                Cancel
+              </button>
+              <button type="submit" 
+                      class="btn btn-success btn-lg create-task-btn" 
+                      [disabled]="!taskName.trim()">
+                <i class="fas fa-check me-2"></i>
+                Create Task
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

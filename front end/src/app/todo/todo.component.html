@@ -1,0 +1,536 @@
+<div class="todo-app">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container-fluid">
+      <div class="navbar-brand d-flex align-items-center">
+        <div class="logo-icon me-2">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect width="32" height="32" rx="8" fill="#007bff"/>
+            <path d="M8 16L14 22L24 10" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="fw-bold text-primary fs-4">Listify</span>
+      </div>
+      
+      <div class="navbar-nav ms-auto d-flex flex-row align-items-center">
+        <!-- Search -->
+        <div class="search-container me-3 d-none d-md-block">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" 
+                   class="form-control search-input border-start-0" 
+                   placeholder="Search tasks..."
+                   [(ngModel)]="searchQuery"
+                   (input)="applyFilters()">
+          </div>
+        </div>
+        
+        <!-- View Mode Toggle -->
+        <div class="btn-group me-2 d-none d-lg-flex" role="group">
+          <button type="button" 
+                  class="btn btn-sm"
+                  [class.btn-primary]="viewMode === 'list'"
+                  [class.btn-outline-secondary]="viewMode !== 'list'"
+                  (click)="setViewMode('list')"
+                  title="List View">
+            <i class="fas fa-list"></i>
+          </button>
+          <button type="button" 
+                  class="btn btn-sm"
+                  [class.btn-primary]="viewMode === 'grid'"
+                  [class.btn-outline-secondary]="viewMode !== 'grid'"
+                  (click)="setViewMode('grid')"
+                  title="Grid View">
+            <i class="fas fa-th"></i>
+          </button>
+          <button type="button" 
+                  class="btn btn-sm"
+                  [class.btn-primary]="viewMode === 'calendar'"
+                  [class.btn-outline-secondary]="viewMode !== 'calendar'"
+                  (click)="setViewMode('calendar')"
+                  title="Calendar View">
+            <i class="fas fa-calendar"></i>
+          </button>
+        </div>
+
+        <!-- Notification and Profile -->
+        <button class="btn btn-link text-dark p-2 me-2" title="Notifications">
+          <i class="fas fa-bell"></i>
+        </button>
+        <div class="profile-avatar me-3">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dXNlciUyMHByb2ZpbGV8ZW58MHx8MHx8fDA%3D" alt="Profile" class="rounded-circle">
+        </div>
+        <button class="btn btn-outline-danger btn-sm" (click)="logout()" title="Logout">
+          <i class="fas fa-sign-out-alt me-1"></i>
+          <span class="d-none d-sm-inline">Logout</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Sidebar -->
+      <div class="col-lg-3 col-md-4 sidebar-wrapper">
+        <div class="sidebar">
+          <!-- Stats Dashboard -->
+          <div class="stats-section mb-4">
+            <h6 class="section-title mb-3">Overview</h6>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-number">{{ stats.total }}</div>
+                <div class="stat-label">Total</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number text-success">{{ stats.completed }}</div>
+                <div class="stat-label">Done</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number text-warning">{{ stats.pending }}</div>
+                <div class="stat-label">Pending</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number text-danger">{{ stats.overdue }}</div>
+                <div class="stat-label">Overdue</div>
+              </div>
+            </div>
+            <div class="progress-section mt-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <small class="text-muted">Completion Rate</small>
+                <small class="fw-bold">{{ stats.completionRate }}%</small>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-success" 
+                     [style.width.%]="stats.completionRate">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendar -->
+          <div class="calendar-section mb-4">
+            <div class="calendar-header d-flex justify-content-between align-items-center mb-3">
+              <button class="btn btn-sm btn-outline-secondary" (click)="previousMonth()">
+                <i class="fas fa-chevron-left"></i>
+              </button>
+              <h6 class="mb-0 fw-bold">{{ currentMonth }} {{ currentYear }}</h6>
+              <button class="btn btn-sm btn-outline-secondary" (click)="nextMonth()">
+                <i class="fas fa-chevron-right"></i>
+              </button>
+            </div>
+            
+            <div class="calendar-grid">
+              <div class="calendar-weekdays">
+                <div class="weekday">Mon</div>
+                <div class="weekday">Tue</div>
+                <div class="weekday">Wed</div>
+                <div class="weekday">Thu</div>
+                <div class="weekday">Fri</div>
+                <div class="weekday">Sat</div>
+                <div class="weekday">Sun</div>
+              </div>
+              <div class="calendar-days">
+                <div *ngFor="let day of calendarDays" 
+                     class="calendar-day"
+                     [class.other-month]="!day.isCurrentMonth"
+                     [class.today]="day.isToday"
+                     [class.selected]="day.selected"
+                     [class.has-tasks]="getTasksForDate(day.fullDate).length > 0"
+                     (click)="selectDate(day)"
+                     [title]="getTasksForDate(day.fullDate).length + ' tasks'">
+                  {{ day.date }}
+                  <span *ngIf="getTasksForDate(day.fullDate).length > 0" 
+                        class="task-indicator">
+                    {{ getTasksForDate(day.fullDate).length }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Selected Date Display -->
+            <div *ngIf="selectedDate" class="selected-date-display mt-3">
+              <div class="alert alert-info py-2 d-flex justify-content-between align-items-center">
+                <div>
+                  <i class="fas fa-calendar-alt me-2"></i>
+                  <small class="fw-medium">{{ selectedDate | date:'MMM d, y' }}</small>
+                </div>
+                <button class="btn btn-sm btn-outline-secondary" 
+                        (click)="selectedDate = null; updateCalendar(); applyFilters()">
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Lists -->
+          <div class="lists-section">
+            <h6 class="section-title mb-3">Quick Lists</h6>
+            <div *ngFor="let list of lists" 
+                 class="list-item d-flex justify-content-between align-items-center mb-2"
+                 (click)="selectQuickList(list.name)">
+              <div class="d-flex align-items-center">
+                <span class="list-icon me-2">{{ list.icon }}</span>
+                <span>{{ list.name }}</span>
+              </div>
+              <span class="badge bg-primary">{{ list.count }}</span>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="tags-section mt-4" *ngIf="availableTags.length > 0">
+            <h6 class="section-title mb-3">Tags</h6>
+            <div class="tags-list">
+              <button *ngFor="let tag of availableTags" 
+                      class="btn btn-sm tag-filter-btn me-2 mb-2"
+                      [class.btn-primary]="currentFilter.tag === tag.name"
+                      [class.btn-outline-secondary]="currentFilter.tag !== tag.name"
+                      (click)="currentFilter.tag = currentFilter.tag === tag.name ? 'all' : tag.name; applyFilters()">
+                {{ tag.name }} ({{ tag.count }})
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-lg-9 col-md-8 main-content">
+        <div class="content-wrapper">
+          <!-- Header -->
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex align-items-center">
+              <h2 class="page-title mb-0 d-flex align-items-center">
+                My Tasks
+                <span class="task-emoji ms-2">📝</span>
+              </h2>
+              <span class="ms-3 text-muted">({{ filteredTasks.length }} tasks)</span>
+            </div>
+            <div class="header-actions">
+              <button class="btn btn-outline-secondary me-2" 
+                      (click)="showFilters = !showFilters"
+                      title="Toggle Filters">
+                <i class="fas fa-filter"></i>
+                <span class="d-none d-md-inline ms-2">Filters</span>
+              </button>
+              <button class="btn btn-primary" (click)="navigateToNewTask()" title="Add New Task">
+                <i class="fas fa-plus me-1"></i>
+                <span class="d-none d-sm-inline">Add Task</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Search -->
+          <div class="mobile-search d-md-none mb-3">
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-search text-muted"></i>
+              </span>
+              <input type="text" 
+                     class="form-control" 
+                     placeholder="Search tasks..."
+                     [(ngModel)]="searchQuery"
+                     (input)="applyFilters()">
+            </div>
+          </div>
+
+          <!-- Filters Panel -->
+          <div class="filters-panel" [class.show]="showFilters">
+            <div class="card">
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" [(ngModel)]="currentFilter.status" (change)="applyFilters()">
+                      <option value="all">All Tasks</option>
+                      <option value="pending">Pending</option>
+                      <option value="completed">Completed</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" [(ngModel)]="currentFilter.priority" (change)="applyFilters()">
+                      <option value="all">All Priorities</option>
+                      <option value="high">High</option>
+                      <option value="medium">Medium</option>
+                      <option value="low">Low</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Due Date</label>
+                    <select class="form-select" [(ngModel)]="currentFilter.dueDate" (change)="applyFilters()">
+                      <option value="all">All Dates</option>
+                      <option value="today">Today</option>
+                      <option value="week">This Week</option>
+                      <option value="overdue">Overdue</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label">Sort By</label>
+                    <select class="form-select" [(ngModel)]="sortBy" (change)="applyFilters()">
+                      <option value="dueDate">Due Date</option>
+                      <option value="name">Name</option>
+                      <option value="priority">Priority</option>
+                      <option value="created">Created</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <button class="btn btn-outline-secondary btn-sm me-2" (click)="clearFilters()">
+                      <i class="fas fa-times me-1"></i>Clear Filters
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" 
+                            (click)="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'; applyFilters()">
+                      <i class="fas" [class.fa-sort-up]="sortOrder === 'asc'" [class.fa-sort-down]="sortOrder === 'desc'"></i>
+                      {{ sortOrder === 'asc' ? 'Ascending' : 'Descending' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bulk Actions -->
+          <div class="bulk-actions" *ngIf="showBulkActions">
+            <div class="alert alert-primary d-flex justify-content-between align-items-center">
+              <span>{{ selectedTasks.length }} tasks selected</span>
+              <div>
+                <button class="btn btn-sm btn-outline-primary me-2" (click)="bulkCompleteTasksToggle()">
+                  <i class="fas fa-check me-1"></i>Toggle Complete
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="bulkDeleteTasks()">
+                  <i class="fas fa-trash me-1"></i>Delete
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2 text-muted">Loading tasks...</p>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!isLoading && filteredTasks.length === 0" class="empty-state text-center py-5">
+            <div class="empty-icon mb-3">
+              <i class="fas fa-tasks fa-3x text-muted"></i>
+            </div>
+            <h4 class="text-muted">No tasks found</h4>
+            <p class="text-muted mb-4">
+              <span *ngIf="tasks.length === 0">Start by creating your first task!</span>
+              <span *ngIf="tasks.length > 0">Try adjusting your filters or search query.</span>
+            </p>
+            <button class="btn btn-primary" (click)="navigateToNewTask()" *ngIf="tasks.length === 0">
+              <i class="fas fa-plus me-2"></i>Create Your First Task
+            </button>
+            <button class="btn btn-outline-secondary" (click)="clearFilters()" *ngIf="tasks.length > 0">
+              <i class="fas fa-times me-2"></i>Clear Filters
+            </button>
+          </div>
+
+          <!-- Tasks Container -->
+          <div *ngIf="!isLoading && filteredTasks.length > 0" class="tasks-container">
+            <!-- Select All Checkbox -->
+            <div class="select-all-section mb-3">
+              <div class="form-check">
+                <input class="form-check-input" 
+                       type="checkbox" 
+                       id="selectAll"
+                       [checked]="selectedTasks.length === filteredTasks.length && filteredTasks.length > 0"
+                       [indeterminate]="selectedTasks.length > 0 && selectedTasks.length < filteredTasks.length"
+                       (change)="selectAllTasks()">
+                <label class="form-check-label" for="selectAll">
+                  Select All
+                </label>
+              </div>
+            </div>
+
+            <!-- List View -->
+            <div *ngIf="viewMode === 'list'" class="tasks-list">
+              <div *ngFor="let task of filteredTasks" 
+                   class="task-item list-view"
+                   [class.completed]="task.completed"
+                   [class.overdue]="isTaskOverdue(task)"
+                   [class.selected]="selectedTasks.includes(task.id)">
+                
+                <div class="task-content">
+                  <div class="task-left">
+                    <div class="form-check me-3">
+                      <input class="form-check-input task-select" 
+                             type="checkbox" 
+                             [checked]="selectedTasks.includes(task.id)"
+                             (change)="toggleTaskSelection(task.id)">
+                    </div>
+                    
+                    <div class="form-check me-3">
+                      <input class="form-check-input task-complete" 
+                             type="checkbox" 
+                             [checked]="task.completed"
+                             (change)="toggleTaskCompletion(task)">
+                    </div>
+                    
+                    <div class="task-info">
+                      <h6 class="task-name mb-1" [class.text-decoration-line-through]="task.completed">
+                        {{ task.name }}
+                      </h6>
+                      <p class="task-description text-muted mb-2" *ngIf="task.description">
+                        {{ task.description }}
+                      </p>
+                      <div class="task-meta">
+                        <span class="priority-badge me-2" *ngIf="task.priority">
+                          {{ getPriorityIcon(task.priority) }} {{ task.priority | titlecase }}
+                        </span>
+                        <span class="due-date me-2" *ngIf="task.dueDate">
+                          <i class="fas fa-calendar-alt me-1"></i>
+                          {{ task.dueDate | date:'MMM d, y' }}
+                        </span>
+                        <span class="tags" *ngIf="task.tags.length > 0">
+                          <span *ngFor="let tag of task.tags" class="badge bg-secondary me-1">
+                            {{ tag.name }}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="task-actions">
+                    <button class="btn btn-sm btn-outline-primary me-2" 
+                            (click)="editTask(task)" 
+                            title="Edit Task">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" 
+                            (click)="deleteTask(task.id)" 
+                            title="Delete Task">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grid View -->
+            <div *ngIf="viewMode === 'grid'" class="tasks-grid">
+              <div *ngFor="let task of filteredTasks" 
+                   class="task-card"
+                   [class.completed]="task.completed"
+                   [class.overdue]="isTaskOverdue(task)"
+                   [class.selected]="selectedTasks.includes(task.id)">
+                
+                <div class="card h-100">
+                  <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                      <div class="form-check me-2">
+                        <input class="form-check-input task-select" 
+                               type="checkbox" 
+                               [checked]="selectedTasks.includes(task.id)"
+                               (change)="toggleTaskSelection(task.id)">
+                      </div>
+                      <div class="form-check">
+                        <input class="form-check-input task-complete" 
+                               type="checkbox" 
+                               [checked]="task.completed"
+                               (change)="toggleTaskCompletion(task)">
+                      </div>
+                    </div>
+                    <span class="priority-icon" *ngIf="task.priority">
+                      {{ getPriorityIcon(task.priority) }}
+                    </span>
+                  </div>
+                  
+                  <div class="card-body">
+                    <h6 class="card-title" [class.text-decoration-line-through]="task.completed">
+                      {{ task.name }}
+                    </h6>
+                    <p class="card-text text-muted" *ngIf="task.description">
+                      {{ task.description }}
+                    </p>
+                    
+                    <div class="task-tags mb-2" *ngIf="task.tags.length > 0">
+                      <span *ngFor="let tag of task.tags" class="badge bg-secondary me-1">
+                        {{ tag.name }}
+                      </span>
+                    </div>
+                    
+                    <div class="due-date text-muted" *ngIf="task.dueDate">
+                      <i class="fas fa-calendar-alt me-1"></i>
+                      <small>{{ task.dueDate | date:'MMM d, y' }}</small>
+                    </div>
+                  </div>
+                  
+                  <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-sm btn-outline-primary" 
+                            (click)="editTask(task)" 
+                            title="Edit Task">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger" 
+                            (click)="deleteTask(task.id)" 
+                            title="Delete Task">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calendar View -->
+            <div *ngIf="viewMode === 'calendar'" class="calendar-view">
+              <div class="calendar-container">
+                <div class="calendar-header d-flex justify-content-between align-items-center mb-4">
+                  <button class="btn btn-outline-secondary" (click)="previousMonth()">
+                    <i class="fas fa-chevron-left me-2"></i>Previous
+                  </button>
+                  <h4 class="mb-0">{{ currentMonth }} {{ currentYear }}</h4>
+                  <button class="btn btn-outline-secondary" (click)="nextMonth()">
+                    Next<i class="fas fa-chevron-right ms-2"></i>
+                  </button>
+                </div>
+                
+                <div class="calendar-full">
+                  <div class="calendar-weekdays-full">
+                    <div class="weekday-full">Monday</div>
+                    <div class="weekday-full">Tuesday</div>
+                    <div class="weekday-full">Wednesday</div>
+                    <div class="weekday-full">Thursday</div>
+                    <div class="weekday-full">Friday</div>
+                    <div class="weekday-full">Saturday</div>
+                    <div class="weekday-full">Sunday</div>
+                  </div>
+                  
+                  <div class="calendar-days-full">
+                    <div *ngFor="let day of calendarDays" 
+                         class="calendar-day-full"
+                         [class.other-month]="!day.isCurrentMonth"
+                         [class.today]="day.isToday">
+                      
+                      <div class="day-number">{{ day.date }}</div>
+                      
+                      <div class="day-tasks">
+                        <div *ngFor="let task of getTasksForDate(day.fullDate)" 
+                             class="task-mini"
+                             [class.completed]="task.completed"
+                             [class.overdue]="isTaskOverdue(task)"
+                             (click)="editTask(task)">
+                          <span class="task-mini-name">{{ task.name }}</span>
+                          <span class="priority-dot" 
+                                [class.high]="task.priority === 'high'"
+                                [class.medium]="task.priority === 'medium'"
+                                [class.low]="task.priority === 'low'"></span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
